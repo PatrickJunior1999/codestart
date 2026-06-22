@@ -1,0 +1,10 @@
+{
+  "name": "CodeStart",
+  "short_name": "CodeStart",
+  "description": "Curso online gamificado de introdução à lógica de programação.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#020617",
+  "theme_color": "#38bdf8",
+  "icons": []
+}
