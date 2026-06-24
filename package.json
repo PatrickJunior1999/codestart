@@ -1,7 +1,7 @@
 {
   "name": "codestart",
   "private": true,
-  "version": "1.0.2-visual-only",
+  "version": "1.0.4",
   "type": "module",
   "scripts": {
     "dev": "vite",

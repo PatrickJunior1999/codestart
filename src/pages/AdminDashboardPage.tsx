@@ -83,6 +83,18 @@ export function AdminDashboardPage() {
     });
   }, [report, search]);
 
+
+  function handlePrintReport() {
+    document.body.classList.add('printing-admin-report');
+
+    window.setTimeout(() => {
+      window.print();
+      window.setTimeout(() => {
+        document.body.classList.remove('printing-admin-report');
+      }, 700);
+    }, 120);
+  }
+
   if (!hasAdminAccess) {
     return (
       <Card>
@@ -132,7 +144,7 @@ export function AdminDashboardPage() {
         </div>
         <div className="button-row">
           <Link className="btn btn-secondary" to="/admin/status">Status do sistema</Link>
-          <button className="btn btn-secondary" type="button" onClick={() => window.print()}>Imprimir relatório</button>
+          <button className="btn btn-secondary" type="button" onClick={handlePrintReport}>Imprimir relatório</button>
           <Link className="btn btn-primary" to="/dashboard">Voltar aos módulos</Link>
         </div>
       </section>
