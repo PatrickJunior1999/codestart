@@ -127,27 +127,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       };
     }
 
-    const { data: listener } = supabase.auth.onAuthStateChange((event, session) => {
-      // Importante: não execute chamadas Supabase diretamente dentro deste callback.
-      // O supabase-js pode travar chamadas futuras se outro método do cliente for aguardado
-      // dentro de onAuthStateChange. Por isso adiamos a hidratação para o próximo ciclo.
-      window.setTimeout(() => {
-        if (!isMounted) return;
-
-        if (event === 'SIGNED_OUT') {
-          setUser(readDemoUser());
-          setProfile(null);
-          setIsLoading(false);
-          return;
-        }
-
-        void hydrateSession(session).catch(() => {
-          if (!isMounted) return;
-          setUser(null);
-          setProfile(null);
-          setIsLoading(false);
-        });
-      }, 0);
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      void hydrateSession(session).catch(() => {
+        setUser(null);
+        setProfile(null);
+        setIsLoading(false);
+      });
     });
 
     return () => {
@@ -173,24 +158,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error('Supabase ainda não foi configurado. Use o modo demonstração ou configure o arquivo .env.');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      const normalizedMessage = error.message.toLowerCase();
-      if (normalizedMessage.includes('email not confirmed') || normalizedMessage.includes('not confirmed')) {
-        throw new Error('Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e clique no link de confirmação enviado pelo CodeStart.');
-      }
-      if (normalizedMessage.includes('rate limit') || normalizedMessage.includes('too many')) {
-        throw new Error('Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.');
-      }
       throw new Error(error.message);
     }
 
     localStorage.removeItem(DEMO_STORAGE_KEY);
-
-    // Atualiza o contexto antes de redirecionar, evitando piscar na tela protegida e voltar ao login.
-    if (data.session) {
-      await hydrateSession(data.session);
-    }
   }
 
   async function signUpWithEmail(data: SignUpData) {
@@ -202,7 +175,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: data.email,
       password: data.password,
       options: {
-        emailRedirectTo: `${window.location.origin}/login?email_confirmed=1`,
         data: {
           full_name: data.fullName,
           school: data.school ?? null,
@@ -213,10 +185,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
-      const normalizedMessage = error.message.toLowerCase();
-      if (normalizedMessage.includes('rate limit') || normalizedMessage.includes('too many')) {
-        throw new Error('Muitas tentativas em pouco tempo. Aguarde alguns minutos e tente novamente.');
-      }
       throw new Error(error.message);
     }
 

@@ -65,7 +65,7 @@ export function RegisterPage() {
       });
 
       if (result.needsEmailConfirmation) {
-        setSuccess('Conta criada. Enviamos um link de confirmação para seu e-mail. Confirme o cadastro antes de tentar entrar. Verifique também a caixa de spam/lixo eletrônico.');
+        setSuccess('Conta criada. Verifique seu e-mail para confirmar o cadastro antes de entrar.');
       } else {
         navigate('/dashboard');
       }
@@ -83,7 +83,7 @@ export function RegisterPage() {
         <h1>Criar conta</h1>
         <p className="muted">
           {isSupabaseReady
-            ? 'Crie sua conta para salvar progresso, XP e certificado. Após o cadastro, confirme seu e-mail para ativar o acesso.'
+            ? 'Crie sua conta para salvar progresso, XP e certificado.'
             : 'Supabase ainda não configurado. O modo demonstração continua disponível.'}
         </p>
 
