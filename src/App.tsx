@@ -5,6 +5,7 @@ import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ResetPasswordPage } from './pages/ResetPasswordPage';
+import { NewPasswordPage } from './pages/NewPasswordPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { ModulePage } from './pages/ModulePage';
 import { QuizPage } from './pages/QuizPage';
@@ -28,6 +29,7 @@ export function App() {
       <Route path="/login" element={<LoginPage />} />
       <Route path="/cadastro" element={<RegisterPage />} />
       <Route path="/recuperar-senha" element={<ResetPasswordPage />} />
+      <Route path="/nova-senha" element={<NewPasswordPage />} />
       <Route path="/sobre" element={<AboutCoursePage />} />
       <Route path="/privacidade" element={<PrivacyPolicyPage />} />
       <Route path="/termos" element={<TermsOfUsePage />} />

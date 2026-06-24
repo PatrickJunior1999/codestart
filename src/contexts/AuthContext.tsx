@@ -30,6 +30,8 @@ type AuthContextValue = {
   signInWithEmail: (email: string, password: string) => Promise<void>;
   signUpWithEmail: (data: SignUpData) => Promise<{ needsEmailConfirmation: boolean }>;
   sendPasswordReset: (email: string) => Promise<void>;
+  resendConfirmationEmail: (email: string) => Promise<void>;
+  updatePassword: (password: string) => Promise<void>;
   refreshProfile: () => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -56,6 +58,30 @@ function readDemoUser(): AppUser | null {
     localStorage.removeItem(DEMO_STORAGE_KEY);
     return null;
   }
+}
+
+
+function authRedirectUrl(path: string) {
+  const origin = window.location.origin.replace(/\/$/, '');
+  return `${origin}${path}`;
+}
+
+function translateAuthError(message: string) {
+  const normalized = message.toLowerCase();
+
+  if (normalized.includes('email not confirmed') || normalized.includes('not confirmed')) {
+    return 'Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada antes de entrar.';
+  }
+
+  if (normalized.includes('invalid login credentials')) {
+    return 'E-mail ou senha incorretos. Verifique os dados e tente novamente.';
+  }
+
+  if (normalized.includes('request rate limit') || normalized.includes('rate limit')) {
+    return 'Muitas tentativas em pouco tempo. Aguarde alguns minutos antes de tentar novamente.';
+  }
+
+  return message;
 }
 
 async function loadProfile(session: Session): Promise<Profile> {
@@ -128,11 +154,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      void hydrateSession(session).catch(() => {
-        setUser(null);
-        setProfile(null);
-        setIsLoading(false);
-      });
+      // O Supabase recomenda evitar chamadas assíncronas diretas dentro do callback.
+      // Adiamos a hidratação para impedir instabilidade de sessão em fluxos com e-mail.
+      setTimeout(() => {
+        void hydrateSession(session).catch(() => {
+          setUser(null);
+          setProfile(null);
+          setIsLoading(false);
+        });
+      }, 0);
     });
 
     return () => {
@@ -160,7 +190,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-      throw new Error(error.message);
+      throw new Error(translateAuthError(error.message));
     }
 
     localStorage.removeItem(DEMO_STORAGE_KEY);
@@ -175,6 +205,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: data.email,
       password: data.password,
       options: {
+        emailRedirectTo: authRedirectUrl('/login?confirmed=1'),
         data: {
           full_name: data.fullName,
           school: data.school ?? null,
@@ -185,7 +216,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     });
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error(translateAuthError(error.message));
     }
 
     localStorage.removeItem(DEMO_STORAGE_KEY);
@@ -199,11 +230,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/login`,
+      redirectTo: authRedirectUrl('/nova-senha'),
     });
 
     if (error) {
-      throw new Error(error.message);
+      throw new Error(translateAuthError(error.message));
+    }
+  }
+
+  async function resendConfirmationEmail(email: string) {
+    if (!supabase) {
+      throw new Error('Supabase ainda não foi configurado.');
+    }
+
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: authRedirectUrl('/login?confirmed=1'),
+      },
+    });
+
+    if (error) {
+      throw new Error(translateAuthError(error.message));
+    }
+  }
+
+  async function updatePassword(password: string) {
+    if (!supabase) {
+      throw new Error('Supabase ainda não foi configurado.');
+    }
+
+    const { error } = await supabase.auth.updateUser({ password });
+    if (error) {
+      throw new Error(translateAuthError(error.message));
     }
   }
 
@@ -234,6 +294,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       signInWithEmail,
       signUpWithEmail,
       sendPasswordReset,
+      resendConfirmationEmail,
+      updatePassword,
       refreshProfile,
       logout,
     }),

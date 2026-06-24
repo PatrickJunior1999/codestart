@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
 import { useAuth } from '../contexts/AuthContext';
@@ -7,13 +7,27 @@ import { useAuth } from '../contexts/AuthContext';
 export function LoginPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { loginDemo, signInWithEmail, isSupabaseReady } = useAuth();
+  const [searchParams] = useSearchParams();
+  const { loginDemo, signInWithEmail, resendConfirmationEmail, isSupabaseReady } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
 
   const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/dashboard';
+
+  useEffect(() => {
+    if (searchParams.get('confirmed') === '1') {
+      setSuccess('E-mail confirmado com sucesso. Agora você já pode entrar no CodeStart.');
+    }
+
+    const errorDescription = searchParams.get('error_description');
+    if (errorDescription) {
+      setError(decodeURIComponent(errorDescription));
+    }
+  }, [searchParams]);
 
   function handleDemoLogin() {
     loginDemo();
@@ -23,6 +37,7 @@ export function LoginPage() {
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    setSuccess(null);
 
     if (!isSupabaseReady) {
       setError('Supabase não configurado. Use o modo demonstração ou configure o arquivo .env.');
@@ -36,13 +51,34 @@ export function LoginPage() {
 
     try {
       setIsSubmitting(true);
-      await signInWithEmail(email, password);
+      await signInWithEmail(email.trim(), password);
       navigate(redirectTo, { replace: true });
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Não foi possível entrar.';
       setError(message);
     } finally {
       setIsSubmitting(false);
+    }
+  }
+
+  async function handleResendConfirmation() {
+    setError(null);
+    setSuccess(null);
+
+    if (!email.trim()) {
+      setError('Informe o e-mail no campo acima para reenviar a confirmação.');
+      return;
+    }
+
+    try {
+      setIsResending(true);
+      await resendConfirmationEmail(email.trim());
+      setSuccess('Enviamos um novo link de confirmação. Verifique sua caixa de entrada e o spam.');
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Não foi possível reenviar a confirmação.';
+      setError(message);
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -57,6 +93,7 @@ export function LoginPage() {
         </p>
 
         {error && <div className="alert alert-error">{error}</div>}
+        {success && <div className="alert alert-success">{success}</div>}
 
         <form className="form-stack" onSubmit={handleSubmit}>
           <label>
@@ -83,6 +120,15 @@ export function LoginPage() {
             {isSubmitting ? 'Entrando...' : 'Entrar'}
           </Button>
         </form>
+
+        <button
+          type="button"
+          className="text-link-button"
+          onClick={handleResendConfirmation}
+          disabled={!isSupabaseReady || isResending}
+        >
+          {isResending ? 'Reenviando confirmação...' : 'Reenviar e-mail de confirmação'}
+        </button>
 
         <Button type="button" variant="secondary" onClick={handleDemoLogin}>Entrar em modo demonstração</Button>
 

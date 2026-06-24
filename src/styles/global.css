@@ -3475,3 +3475,24 @@ input:disabled {
     box-shadow: none !important;
   }
 }
+
+.text-link-button {
+  border: 0;
+  background: transparent;
+  color: #7dd3fc;
+  font-weight: 900;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  text-align: center;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.text-link-button:hover:not(:disabled) {
+  color: #38bdf8;
+}
+
+.text-link-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
