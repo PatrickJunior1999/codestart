@@ -137,3 +137,12 @@ Depois de publicar, acesse `/admin/status` com um usuário administrador para va
 - `docs/ROTEIRO_APRESENTACAO_V1_0.md`
 - `docs/GUIA_PUBLICACAO_V1_0.md`
 - `docs/CHECKLIST_TESTES_FINAIS_V1_0.md`
+
+
+## Atualização v1.0.2
+
+- Módulo 8 e Projeto Final agora usam imagem de referência visual em vez de código pronto.
+- Editor visual inicia em branco para estimular resolução própria do aluno.
+- Ajuda de comandos passou a mostrar sintaxe genérica, sem entregar uma solução.
+- Cadastro preparado para confirmação de e-mail pelo Supabase Auth.
+- Adicionada migration `012_visual_reference_email_validation_patch.sql` para remover `starter_code` das atividades já cadastradas no banco.

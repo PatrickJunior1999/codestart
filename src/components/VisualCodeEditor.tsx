@@ -27,18 +27,16 @@ const COLOR_MAP: Record<string, string> = {
   cinza: '#94a3b8',
 };
 
-const DEFAULT_CODE = [
+const DEFAULT_CODE = '';
+
+const EDITOR_PLACEHOLDER = [
+  'Comece aqui. Exemplo de estrutura:',
   'limpar',
-  'cor amarelo',
-  'circulo 340 60 58',
-  'cor azul',
-  'retangulo 90 140 160 110',
-  'cor roxo',
-  'triangulo 70 140 170 55 270 140',
-  'cor marrom',
-  'retangulo 155 190 42 60',
-  'cor verde',
-  'linha 30 260 390 260',
+  'cor nome_da_cor',
+  'retangulo x y largura altura',
+  'circulo x y tamanho',
+  'linha x1 y1 x2 y2',
+  'triangulo x1 y1 x2 y2 x3 y3',
 ].join('\n');
 
 function parseNumber(value: string): number | null {
@@ -240,6 +238,7 @@ export function VisualCodeEditor({ initialCode, onCodeChange, onValidChange }: V
               onChange={(event) => setCode(event.target.value)}
               spellCheck={false}
               value={code}
+              placeholder={EDITOR_PLACEHOLDER}
             />
           </label>
           <div className="button-row">
@@ -249,11 +248,11 @@ export function VisualCodeEditor({ initialCode, onCodeChange, onValidChange }: V
           </div>
           <div className="command-help command-help-tech">
             <strong>Comandos permitidos</strong>
-            <code>cor azul</code>
-            <code>circulo 100 100 50</code>
-            <code>retangulo 180 100 80 60</code>
-            <code>linha 50 220 300 220</code>
-            <code>triangulo 70 140 170 55 270 140</code>
+            <code>cor nome_da_cor</code>
+            <code>circulo x y tamanho</code>
+            <code>retangulo x y largura altura</code>
+            <code>linha x1 y1 x2 y2</code>
+            <code>triangulo x1 y1 x2 y2 x3 y3</code>
             <code>limpar</code>
           </div>
         </div>
@@ -268,8 +267,11 @@ export function VisualCodeEditor({ initialCode, onCodeChange, onValidChange }: V
               </ul>
             </div>
           )}
-          {parsed.errors.length === 0 && (
+          {parsed.errors.length === 0 && lastRun.trim().length > 0 && (
             <div className="alert alert-success">Comandos interpretados com sucesso.</div>
+          )}
+          {lastRun.trim().length === 0 && (
+            <div className="alert alert-warning">Digite seus comandos e clique em Executar prévia para comparar com a referência.</div>
           )}
         </div>
       </div>

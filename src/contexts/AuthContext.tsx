@@ -160,6 +160,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      const normalizedMessage = error.message.toLowerCase();
+      if (normalizedMessage.includes('email not confirmed') || normalizedMessage.includes('not confirmed')) {
+        throw new Error('Seu e-mail ainda não foi confirmado. Verifique sua caixa de entrada e clique no link de confirmação enviado pelo CodeStart.');
+      }
       throw new Error(error.message);
     }
 
@@ -175,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       email: data.email,
       password: data.password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login?email_confirmed=1`,
         data: {
           full_name: data.fullName,
           school: data.school ?? null,

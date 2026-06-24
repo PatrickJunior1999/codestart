@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
@@ -12,6 +12,12 @@ export function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const confirmationMessage = useMemo(() => {
+    const params = new URLSearchParams(location.search);
+    return params.get('email_confirmed') === '1'
+      ? 'E-mail confirmado com sucesso. Agora você já pode entrar no CodeStart.'
+      : null;
+  }, [location.search]);
 
   const redirectTo = (location.state as { from?: { pathname?: string } } | null)?.from?.pathname ?? '/dashboard';
 
@@ -56,6 +62,7 @@ export function LoginPage() {
             : 'Supabase ainda não configurado. O modo demonstração continua disponível.'}
         </p>
 
+        {confirmationMessage && <div className="alert alert-success">{confirmationMessage}</div>}
         {error && <div className="alert alert-error">{error}</div>}
 
         <form className="form-stack" onSubmit={handleSubmit}>

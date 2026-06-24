@@ -2,6 +2,7 @@ import { type DragEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { LogicSpeechBubble } from '../components/LogicSpeechBubble';
+import { TargetVisualReference } from '../components/TargetVisualReference';
 import { VisualCodeEditor } from '../components/VisualCodeEditor';
 import { useAuth } from '../contexts/AuthContext';
 import { useCourseModules } from '../hooks/useCourseModules';
@@ -491,7 +492,7 @@ function countCommand(lines: string[], command: string) {
 }
 
 function VisualCodeActivity({ activity, onComplete }: { activity: Activity; onComplete: (data: unknown, isCorrect: boolean) => Promise<void> }) {
-  const [code, setCode] = useState(String(activity.activity_data.starter_code ?? ''));
+  const [code, setCode] = useState('');
   const [isValid, setIsValid] = useState(true);
   const [feedback, setFeedback] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -499,7 +500,8 @@ function VisualCodeActivity({ activity, onComplete }: { activity: Activity; onCo
   const minimumLines = Number(activity.activity_data.minimum_lines ?? 1);
   const minimumCounts = (activity.activity_data.minimum_counts ?? {}) as Record<string, number>;
   const minimumColors = typeof activity.activity_data.minimum_colors === 'number' ? Number(activity.activity_data.minimum_colors) : 0;
-  const targetDescription = String(activity.activity_data.target_description ?? 'Siga os critérios da atividade para montar o desenho solicitado.');
+  const targetDescription = String(activity.activity_data.target_description ?? 'Siga a imagem de referência e os critérios para montar o desenho solicitado.');
+  const targetReference = String(activity.activity_data.target_reference ?? 'neighborhood');
   const extraCriteria = (activity.activity_data.criteria ?? []) as string[];
 
   const normalizedLines = useMemo(() => code.split('\n').map((line) => line.trim().toLowerCase()).filter(Boolean), [code]);
@@ -532,14 +534,18 @@ function VisualCodeActivity({ activity, onComplete }: { activity: Activity; onCo
 
   return (
     <div className="activity-body visual-code-activity">
-      <div className="target-briefing-card">
-        <span className="eyebrow">Alvo visual</span>
-        <h3>{targetDescription}</h3>
-        {extraCriteria.length > 0 && (
-          <ul>
-            {extraCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}
-          </ul>
-        )}
+      <div className="target-briefing-card visual-reference-briefing">
+        <div>
+          <span className="eyebrow">Imagem de referência</span>
+          <h3>{targetDescription}</h3>
+          <p className="muted">Observe a imagem e tente recriar o desenho no editor usando os comandos permitidos. O sistema mostra critérios, mas não entrega o código pronto.</p>
+          {extraCriteria.length > 0 && (
+            <ul>
+              {extraCriteria.map((criterion) => <li key={criterion}>{criterion}</li>)}
+            </ul>
+          )}
+        </div>
+        <TargetVisualReference variant={targetReference} title="Referência do desafio" description="Use esta imagem como guia visual, não como código pronto." />
       </div>
       <ul className="status-checklist criteria-checklist">
         {criteriaStatus.map((criterion) => (

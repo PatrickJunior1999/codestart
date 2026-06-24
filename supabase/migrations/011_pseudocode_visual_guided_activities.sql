@@ -77,8 +77,8 @@ on conflict (module_id, order_index) do update set activity_type=excluded.activi
 insert into public.activities (module_id,activity_type,title,statement,activity_data,success_feedback,error_feedback,order_index)
 select id,$cs$visual_code$cs$,$cs$Desafio visual 8.1: Recrie uma casa$cs$,$cs$Monte uma casa usando corpo, telhado, porta e chão. O foco é usar formas com intenção.$cs$,$cs${
   "target_description": "Alvo: uma casa com corpo, telhado triangular, porta e chão.",
+  "target_reference": "house",
   "criteria": ["Use retângulo para o corpo da casa", "Use triângulo para o telhado", "Use outro retângulo para a porta", "Use linha para representar chão"],
-  "starter_code": "limpar\ncor azul\nretangulo 100 150 160 90\ncor roxo\ntriangulo 80 150 180 70 280 150\ncor marrom\nretangulo 160 195 40 55\ncor verde\nlinha 40 260 380 260",
   "required_commands": ["cor", "retangulo", "triangulo", "linha"],
   "minimum_counts": {"retangulo": 2, "triangulo": 1, "linha": 1},
   "minimum_colors": 3,
@@ -89,8 +89,8 @@ on conflict (module_id, order_index) do update set activity_type=excluded.activi
 insert into public.activities (module_id,activity_type,title,statement,activity_data,success_feedback,error_feedback,order_index)
 select id,$cs$visual_code$cs$,$cs$Desafio visual 8.2: Árvore, sol e chão$cs$,$cs$Crie uma árvore simples ao lado de um sol usando comandos visuais.$cs$,$cs${
   "target_description": "Alvo: uma árvore com tronco, copa verde, sol e chão.",
+  "target_reference": "tree_sun",
   "criteria": ["Use retângulo para o tronco", "Use círculo para a copa da árvore", "Use círculo para o sol", "Use linha para o chão"],
-  "starter_code": "limpar\ncor amarelo\ncirculo 335 65 60\ncor marrom\nretangulo 175 170 35 85\ncor verde\ncirculo 190 135 85\ncor verde\nlinha 40 260 380 260",
   "required_commands": ["cor", "circulo", "retangulo", "linha"],
   "minimum_counts": {"circulo": 2, "retangulo": 1, "linha": 1},
   "minimum_colors": 3,
@@ -101,8 +101,8 @@ on conflict (module_id, order_index) do update set activity_type=excluded.activi
 insert into public.activities (module_id,activity_type,title,statement,activity_data,success_feedback,error_feedback,order_index)
 select id,$cs$visual_code$cs$,$cs$Desafio visual 8.3: Carro na rua$cs$,$cs$Desenhe um carro simples com rodas, corpo, cabine e rua.$cs$,$cs${
   "target_description": "Alvo: um carro com corpo, cabine, duas rodas e uma linha de rua.",
+  "target_reference": "car",
   "criteria": ["Use retângulo para o corpo", "Use retângulo para a cabine", "Use dois círculos para as rodas", "Use linha para a rua"],
-  "starter_code": "limpar\ncor vermelho\nretangulo 95 170 190 55\ncor azul\nretangulo 145 135 90 45\ncor preto\ncirculo 135 235 38\ncirculo 250 235 38\ncor cinza\nlinha 40 260 380 260",
   "required_commands": ["cor", "retangulo", "circulo", "linha"],
   "minimum_counts": {"retangulo": 2, "circulo": 2, "linha": 1},
   "minimum_colors": 3,
@@ -113,8 +113,8 @@ on conflict (module_id, order_index) do update set activity_type=excluded.activi
 insert into public.activities (module_id,activity_type,title,statement,activity_data,success_feedback,error_feedback,order_index)
 select id,$cs$visual_code$cs$,$cs$Desafio visual 8.4: Cena completa do bairro$cs$,$cs$Combine casa, árvore, sol e chão em uma única cena antes do projeto final.$cs$,$cs${
   "target_description": "Alvo: uma cena com casa, árvore, sol e chão, preparando o projeto final.",
+  "target_reference": "neighborhood",
   "criteria": ["Inclua uma casa com telhado", "Inclua uma árvore", "Inclua um sol", "Inclua chão ou rua", "Use pelo menos quatro cores"],
-  "starter_code": "limpar\ncor amarelo\ncirculo 340 60 58\ncor azul\nretangulo 90 150 150 90\ncor roxo\ntriangulo 70 150 165 70 260 150\ncor marrom\nretangulo 150 195 40 55\nretangulo 305 170 28 80\ncor verde\ncirculo 320 135 75\ncor cinza\nlinha 20 260 400 260",
   "required_commands": ["cor", "retangulo", "circulo", "triangulo", "linha"],
   "minimum_counts": {"retangulo": 3, "circulo": 2, "triangulo": 1, "linha": 1},
   "minimum_colors": 4,

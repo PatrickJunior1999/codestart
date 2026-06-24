@@ -2,26 +2,12 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Card } from '../components/Card';
 import { LogicSpeechBubble } from '../components/LogicSpeechBubble';
+import { TargetVisualReference } from '../components/TargetVisualReference';
 import { VisualCodeEditor } from '../components/VisualCodeEditor';
 import { useAuth } from '../contexts/AuthContext';
 import { saveFinalProject } from '../services/courseService';
 
-const FINAL_PROJECT_STARTER = [
-  'limpar',
-  'cor amarelo',
-  'circulo 340 60 58',
-  'cor azul',
-  'retangulo 95 150 150 95',
-  'cor roxo',
-  'triangulo 75 150 170 75 265 150',
-  'cor marrom',
-  'retangulo 155 190 42 55',
-  'cor verde',
-  'retangulo 285 155 28 90',
-  'circulo 300 125 70',
-  'cor cinza',
-  'linha 0 260 420 260',
-].join('\n');
+const FINAL_PROJECT_STARTER = '';
 
 const REQUIREMENTS = [
   { label: 'pelo menos 12 linhas de comandos', test: (lines: string[]) => lines.length >= 12 },
@@ -85,15 +71,18 @@ export function FinalProjectPage() {
 
       <LogicSpeechBubble message="Sua missão final é demonstrar sequência lógica, escolha de formas, uso de cores e organização espacial. Pense no desenho antes de escrever os comandos." />
 
-      <Card className="project-briefing-card">
-        <span className="eyebrow">Briefing do desafio</span>
-        <h2>Desenhe uma cena programada completa</h2>
-        <p>A cena deve conter, no mínimo: uma casa com telhado, uma árvore, um sol e uma linha de chão ou rua. Você pode melhorar o desenho com janelas, porta, nuvens, caminho, detalhes e organização espacial.</p>
-        <ul className="status-checklist">
-          {requirementStatus.map((item) => (
-            <li className={item.passed ? 'checked' : ''} key={item.label}>{item.passed ? '☑' : '□'} {item.label}</li>
-          ))}
-        </ul>
+      <Card className="project-briefing-card visual-reference-briefing">
+        <div>
+          <span className="eyebrow">Briefing do desafio</span>
+          <h2>Desenhe uma cena programada completa</h2>
+          <p>A cena deve conter, no mínimo: uma casa com telhado, uma árvore, um sol e uma linha de chão ou rua. Use a imagem como referência visual e escreva seu próprio código, sem modelo pronto.</p>
+          <ul className="status-checklist">
+            {requirementStatus.map((item) => (
+              <li className={item.passed ? 'checked' : ''} key={item.label}>{item.passed ? '☑' : '□'} {item.label}</li>
+            ))}
+          </ul>
+        </div>
+        <TargetVisualReference variant="neighborhood" title="Imagem de referência do projeto final" description="Recrie uma cena semelhante usando seus próprios comandos." />
       </Card>
 
       <Card>
