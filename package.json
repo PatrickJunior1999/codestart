@@ -9,7 +9,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "check": "npm run build",
-    "deploy:preview": "vite preview"
+    "deploy:preview": "vite preview",
+    "seed:admin-report": "node scripts/seed-admin-report.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.49.4",

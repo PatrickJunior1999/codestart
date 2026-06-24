@@ -5,3 +5,5 @@ dist/
 .env.*.local
 .DS_Store
 *.log
+.env.seed
+.env.seed.local
